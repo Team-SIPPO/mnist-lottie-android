@@ -14,10 +14,13 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
     private String TAG = "AAA";
     private LottieAnimationView animationView = null;
+    private LottieAnimationView animationView2 = null;
+    private LottieSwitchViewWrapper animationSwitch = null;
     private Integer maxFrame = null;
 
     @Override
@@ -27,6 +30,19 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         animationView = findViewById(R.id.animation_view);
+
+        animationView2 = findViewById(R.id.animation_view2);
+        Toast.makeText(this,String.valueOf(animationView.getMaxFrame()),Toast.LENGTH_LONG).show();
+        animationSwitch = new LottieSwitchViewWrapper(animationView2);
+        animationSwitch.setSwitchOnProceed(0f, 0.5f);
+        animationSwitch.setSwitchOffProceed(0.5f, 1.0f);
+        animationSwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if(isChecked){
+                Toast.makeText(this, "on", Toast.LENGTH_LONG).show();
+            } else {
+                Toast.makeText(this, "off", Toast.LENGTH_LONG).show();
+            }
+        });
 
         animationView.setOnTouchListener(new View.OnTouchListener() {
             @Override
@@ -42,6 +58,7 @@ public class MainActivity extends AppCompatActivity {
                 return false;
             }
         });
+
 
         FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {

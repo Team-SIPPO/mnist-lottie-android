@@ -30,4 +30,17 @@
         app:lottie_loop="false"
         app:lottie_rawRes="@raw/favourite_star" />
 
+    <com.airbnb.lottie.LottieAnimationView
+        android:id="@+id/animation_view2"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toTopOf="@+id/textView"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:lottie_autoPlay="false"
+        app:lottie_loop="false"
+        app:lottie_rawRes="@raw/favourite_star2" />
+
+
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -2,16 +2,19 @@ package io.github.team_sippo.lottie_sample;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.graphics.Canvas;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
+import android.view.View;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.airbnb.lottie.LottieAnimationView;
+import com.airbnb.lottie.LottieComposition;
 
-public class LottieSwitchViewWrapper {
-    private LottieAnimationView animationView;
+public class LottieSwitchView extends LottieAnimationView{
     private OnCheckedChangeListener mOnCheckedChangeListener;
     private boolean mChecked = false;
     private Integer switchOnStartFrame;
@@ -25,20 +28,59 @@ public class LottieSwitchViewWrapper {
     private Float switchOffEndProceed;
     private boolean force = false;
 
+
+    public LottieSwitchView(Context context) {
+        super(context);
+        init();
+    }
+
+    public LottieSwitchView(Context context, AttributeSet attrs) {
+        super(context, attrs);
+        init();
+    }
+
+    public LottieSwitchView(Context context, AttributeSet attrs, int defStyleAttr) {
+        super(context, attrs, defStyleAttr);
+        init();
+    }
+
+    public void setChecked(boolean isChecked){
+        mChecked = isChecked;
+    }
+
+
+    @Override
+    public void setComposition(@NonNull LottieComposition composition) {
+        super.setComposition(composition);
+        init_param(force);
+        setSwitchStart(mChecked);
+        Log.d("AAA", "onMeasureEnd max frame :" + String.valueOf(getMaxFrame()));
+    }
+
+    private void setSwitchStart(boolean isChecked){
+        if(isChecked){
+            setMinAndMaxFrame(switchOffStartFrame, switchOffStartFrame+1);
+        } else {
+            setMinAndMaxFrame(switchOnStartFrame, switchOnStartFrame+1);
+        }
+        playAnimation();
+    }
+
     @SuppressLint("ClickableViewAccessibility")
-    public LottieSwitchViewWrapper(LottieAnimationView animationView) {
-        this.animationView = animationView;
-        this.animationView.setOnTouchListener((v, event) -> {
+    private void init(){
+        this.setOnTouchListener((v, event) -> {
             if(event.getAction() == MotionEvent.ACTION_DOWN){
                 onTouched();
             }
             return true;
         });
-    }
 
-    private void init(boolean force){
-        if (force || animationDuration == null){
-            this.animationDuration = Double.valueOf(String.valueOf(animationView.getMaxFrame())).intValue();
+    }
+    private void init_param(boolean force){
+        if(animationDuration == null){
+            this.animationDuration = Double.valueOf(String.valueOf(this.getMaxFrame())).intValue();
+        }
+        if (force){
             Log.d("AAA", "duration is " + String.valueOf(this.animationDuration));
             if(this.switchOnStartFrame == null){
                 if (switchOnStartProceed != null){
@@ -56,6 +98,7 @@ public class LottieSwitchViewWrapper {
                 }
             }
             Log.d("AAA", "switchOnEndFrame is " + String.valueOf(this.switchOnEndFrame));
+            Log.d("AAA", "switchOnEndProceed is " + String.valueOf(this.switchOnEndProceed));
             if (switchOffStartFrame == null){
                 if(switchOffStartProceed != null){
                     this.switchOffStartFrame = (int)((this.animationDuration - 1) * switchOffStartProceed);
@@ -80,7 +123,7 @@ public class LottieSwitchViewWrapper {
      * anni
      */
     private void onTouched(){
-        init(force);
+        init_param(force);
         if(mChecked){
             mChecked = false;
             if (mOnCheckedChangeListener != null){
@@ -98,26 +141,29 @@ public class LottieSwitchViewWrapper {
         }
     }
 
-    private void allFrameInfoToNull(){
-        this.switchOnStartFrame = null;
-        this.switchOnEndFrame = null;
-        this.switchOffStartFrame = null;
-        this.switchOffEndFrame = null;
-        this.switchOnStartProceed = null;
-        this.switchOnEndProceed = null;
-        this.switchOffStartProceed = null;
-        this.switchOffEndProceed = null;
+    private void allFrameInfoToNull(boolean switchOn){
+        if (switchOn){
+            this.switchOnStartFrame = null;
+            this.switchOnEndFrame = null;
+            this.switchOnStartProceed = null;
+            this.switchOnEndProceed = null;
+        } else {
+            this.switchOffStartFrame = null;
+            this.switchOffEndFrame = null;
+            this.switchOffStartProceed = null;
+            this.switchOffEndProceed = null;
+        }
     }
 
     public void setSwitchOnProceed(Float start, Float end){
-        allFrameInfoToNull();
+        allFrameInfoToNull(true);
         this.switchOnStartProceed = start;
         this.switchOnEndProceed = end;
         this.force = true;
     }
 
     public void setSwitchOffProceed(Float start, Float end){
-        allFrameInfoToNull();
+        allFrameInfoToNull(false);
         this.switchOffStartProceed = start;
         this.switchOffEndProceed = end;
         this.force = true;
@@ -125,31 +171,31 @@ public class LottieSwitchViewWrapper {
 
 
     public void setSwitchOnFrame(Integer startFrame, Integer endFrame){
-        allFrameInfoToNull();
+        allFrameInfoToNull(true);
         this.switchOnStartFrame = startFrame;
         this.switchOnEndFrame = endFrame;
         this.force = true;
     }
 
     public void setSwitchOffFrame(Integer startFrame, Integer endFrame){
-        allFrameInfoToNull();
+        allFrameInfoToNull(false);
         this.switchOffStartFrame = startFrame;
         this.switchOffEndFrame = endFrame;
         this.force = true;
     }
 
     private void startSwitchOnAnimation(){
-        this.animationView.setMinFrame(switchOnStartFrame);
-        this.animationView.setMaxFrame(switchOnEndFrame);
-        this.animationView.setSpeed(2);
-        this.animationView.playAnimation();
+        this.setMinFrame(switchOnStartFrame);
+        this.setMaxFrame(switchOnEndFrame);
+        this.setSpeed(2);
+        this.playAnimation();
     }
 
     private void startSwitchOffAnimation(){
-        this.animationView.setMinFrame(switchOffStartFrame);
-        this.animationView.setMaxFrame(switchOffEndFrame);
-        this.animationView.setSpeed(2);
-        this.animationView.playAnimation();
+        this.setMinFrame(switchOffStartFrame);
+        this.setMaxFrame(switchOffEndFrame);
+        this.playAnimation();
+        this.setSpeed(2);
     }
 
 
@@ -159,7 +205,7 @@ public class LottieSwitchViewWrapper {
      *
      * @param listener the callback to call on checked state change
      */
-    public void setOnCheckedChangeListener(@Nullable LottieSwitchViewWrapper.OnCheckedChangeListener listener) {
+    public void setOnCheckedChangeListener(@Nullable LottieSwitchView.OnCheckedChangeListener listener) {
         mOnCheckedChangeListener = listener;
     }
 
@@ -171,10 +217,10 @@ public class LottieSwitchViewWrapper {
         /**
          * Called when the checked state of a compound button has changed.
          *
-         * @param buttonView The compound button view whose state has changed.
+         * @param switchView The compound button view whose state has changed.
          * @param isChecked  The new checked state of buttonView.
          */
-        void onCheckedChanged(LottieSwitchViewWrapper buttonView, boolean isChecked);
+        void onCheckedChanged(LottieSwitchView switchView, boolean isChecked);
     }
 
 }

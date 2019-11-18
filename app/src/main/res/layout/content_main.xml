@@ -30,7 +30,7 @@
         app:lottie_loop="false"
         app:lottie_rawRes="@raw/favourite_star" />
 
-    <com.airbnb.lottie.LottieAnimationView
+    <io.github.team_sippo.lottie_sample.LottieSwitchView
         android:id="@+id/animation_view2"
         android:layout_width="0dp"
         android:layout_height="0dp"
